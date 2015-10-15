@@ -1,2 +1,2 @@
-# algorithms
-CSC505 practice implementation
+# CSC505 - Algorithms
+
