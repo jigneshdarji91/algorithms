@@ -36,19 +36,7 @@ int rselect_iterative(int p, int r, int k)
     {
         if(p > r)
         {
-            if(stack_right.size() == 0)
-            {
-                LOG("end of job! Yay!");
-                break;
-            }
-            else
-            {
-                r = stack_right.top();
-                stack_right.pop();
-                p = stack_right.top();
-                stack_right.pop();
-                continue;
-            }
+            return a[p];
         }
         int q = partition(p, r);
         LOG("p: " << p << " q: " << q << "r: " << r);
@@ -57,11 +45,16 @@ int rselect_iterative(int p, int r, int k)
             LOG("found it! a[" << k << "]: " << a[k]);
             return a[k];
         }
-        
-        stack_right.push(q+1);
-        stack_right.push(r);
-        p = p;
-        r = q - 1;
+        else if(k <= q)
+        {
+            p = p;
+            r = q - 1;
+        }
+        else
+        {
+            p = q + 1;
+            r = r;
+        }
     }
 }
 
