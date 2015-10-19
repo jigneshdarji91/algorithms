@@ -18,6 +18,8 @@ int main()
     
     matrix_chain_order(p);
     cout << "***Dynamic Matrix Chain Multiplication***\n";
+
+    //Print M
     cout << "Matrix M: \n";
     for(int i = 0; i < CHAIN_SIZE; i++)
     {
@@ -27,6 +29,7 @@ int main()
     }
     cout << "\n";
     
+    //Print S
     cout << "Matrix S: \n";
     for(int i = 0; i < CHAIN_SIZE; i++)
     {
@@ -36,6 +39,7 @@ int main()
     }
     cout << "\n";
 
+    //Print optimal paranthesization
     print_optimal_parans(p, 0, CHAIN_SIZE - 1);
     cout << "\n";
 
