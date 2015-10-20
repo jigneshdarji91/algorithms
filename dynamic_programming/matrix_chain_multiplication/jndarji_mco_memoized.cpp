@@ -7,7 +7,8 @@ using namespace std;
 #define CHAIN_SIZE 4
 
 int print_optimal_parans(int (&p)[CHAIN_SIZE + 1], int i, int j);
-int matrix_chain_order(int (&p)[CHAIN_SIZE + 1]);
+int memoized_matrix_chain(int (&p)[CHAIN_SIZE + 1]);
+int lookup_chain(int (&p)[CHAIN_SIZE + 1], int i, int j);
 
 static int m[CHAIN_SIZE][CHAIN_SIZE];
 static int s[CHAIN_SIZE][CHAIN_SIZE];
@@ -16,15 +17,19 @@ int main()
 {
     int p[CHAIN_SIZE + 1] = {22, 145, 10, 25, 67};
     
-    matrix_chain_order(p);
-    cout << "***Dynamic Matrix Chain Multiplication***\n";
-
+    memoized_matrix_chain(p);
+    cout << "***Memoized Matrix Chain Multiplication***\n";
+    
     //Print M
     cout << "Matrix M: \n";
     for(int i = 0; i < CHAIN_SIZE; i++)
     {
         for(int j = 0; j < CHAIN_SIZE; j++)
+        {
+            if(m[i][j] == INT_MAX)
+                m[i][j] = 0;
             cout << " " << setw(6) << m[i][j];
+        }
         cout << "\n";
     }
     cout << "\n";
@@ -58,28 +63,38 @@ int print_optimal_parans(int (&p)[CHAIN_SIZE + 1], int i, int j)
     }
 }
 
-int matrix_chain_order(int (&p)[CHAIN_SIZE + 1])
+int lookup_chain(int (&p)[CHAIN_SIZE + 1], int i, int j)
 {
-    int n = CHAIN_SIZE;
-    for(int i = 0; i < n; i++)
-        m[i][i] = 0;
+    int q = 0;
+    if(m[i][j] < INT_MAX)
+        return m[i][j];
 
-    for(int l = 2; l <= n; l++)
+    if(i == j)
+        m[i][j] = 0;
+    else
     {
-        for(int i = 0; i < n - l + 1; i++)
-        {
-            int j = i + l - 1;
-            m[i][j] = INT_MAX;
-            for(int k = i; k <= j - 1; k++)
+       for(int k = i; k <= j - 1; k++) 
+       {
+            q = lookup_chain(p, i, k)
+                + lookup_chain(p, k + 1, j)
+                + p[i]*p[k+1]*p[j+1];
+            if(q < m[i][j])
             {
-                int q = m[i][k] + m[k+1][j] + p[i]*p[k+1]*p[j+1];
-                if(q < m[i][j])
-                {
-                    m[i][j] = q;
-                    s[i][j] = k + 1;
-                }
+                m[i][j] = q;
+                s[i][j] = k + 1;
             }
         }
     }
+    return m[i][j];
 }
 
+int memoized_matrix_chain(int (&p)[CHAIN_SIZE + 1])
+{
+    int n = CHAIN_SIZE;
+
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            m[i][j] = INT_MAX;
+
+    return lookup_chain(p, 0, n - 1);
+}

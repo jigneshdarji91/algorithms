@@ -7,18 +7,20 @@ using namespace std;
 #define CHAIN_SIZE 4
 
 int print_optimal_parans(int (&p)[CHAIN_SIZE + 1], int i, int j);
-int matrix_chain_order(int (&p)[CHAIN_SIZE + 1]);
+int matrix_chain_order_recursive(int (&p)[CHAIN_SIZE + 1], int i, int j);
 
 static int m[CHAIN_SIZE][CHAIN_SIZE];
 static int s[CHAIN_SIZE][CHAIN_SIZE];
+static int recursive_calls = 0;
 
 int main()
 {
     int p[CHAIN_SIZE + 1] = {22, 145, 10, 25, 67};
     
-    matrix_chain_order(p);
-    cout << "***Dynamic Matrix Chain Multiplication***\n";
-
+    matrix_chain_order_recursive(p, 0, CHAIN_SIZE - 1);
+    cout << "***Recursive Matrix Chain Multiplication***\n";
+    
+    cout << "Recursive calls made: " << recursive_calls << endl;
     //Print M
     cout << "Matrix M: \n";
     for(int i = 0; i < CHAIN_SIZE; i++)
@@ -58,28 +60,27 @@ int print_optimal_parans(int (&p)[CHAIN_SIZE + 1], int i, int j)
     }
 }
 
-int matrix_chain_order(int (&p)[CHAIN_SIZE + 1])
+int matrix_chain_order_recursive(int (&p)[CHAIN_SIZE + 1], int i, int j)
 {
+    recursive_calls++;
     int n = CHAIN_SIZE;
-    for(int i = 0; i < n; i++)
-        m[i][i] = 0;
+    int q = 0;
+    if(i == j)
+        return 0;
+    m[i][j] = INT_MAX;
 
-    for(int l = 2; l <= n; l++)
+    for(int k = i; k < j; k++)
     {
-        for(int i = 0; i < n - l + 1; i++)
+        q = matrix_chain_order_recursive(p, i, k)
+            + matrix_chain_order_recursive(p, k + 1, j)
+            + p[i]*p[k+1]*p[j + 1];
+        if(q < m[i][j])
         {
-            int j = i + l - 1;
-            m[i][j] = INT_MAX;
-            for(int k = i; k <= j - 1; k++)
-            {
-                int q = m[i][k] + m[k+1][j] + p[i]*p[k+1]*p[j+1];
-                if(q < m[i][j])
-                {
-                    m[i][j] = q;
-                    s[i][j] = k + 1;
-                }
-            }
+            m[i][j] = q;
+            s[i][j] = k + 1;
         }
     }
+    
+    return m[i][j];
 }
 
